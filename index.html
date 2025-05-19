@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FX-OPTIONS IND</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --platinum: #E5E4E2;
+      --gold: #D4AF37;
+      --gold-dark: #B38B2D;
+      --gold-light: #FFD700;
+      --bg-dark: #0A0A0A;
+      --bg-darker: #050505;
+      --bg-glass: rgba(15, 15, 15, 0.65);
+      --text-light: #F5F5F5;
+      --text-lighter: #FFFFFF;
+      --success: #4CAF50;
+      --danger: #F44336;
+      --info: #2196F3;
+      --border-radius: 16px;
+      --box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: radial-gradient(circle, #0f0c29, #302b63, #24243e);
+      color: var(--text-light);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+      animation: neonPulse 12s ease-in-out infinite;
+    }
+    
+    @keyframes neonPulse {
+      0%, 100% {
+        box-shadow: 0 0 20px #D4AF37, 0 0 40px #D4AF37, 0 0 80px #D4AF37;
+      }
+      50% {
+        box-shadow: 0 0 40px #FFD700, 0 0 60px #FFD700, 0 0 100px #FFD700;
+      }
+    }
+    
+    .container {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: var(--border-radius);
+      width: 100%;
+      max-width: 1200px;
+      box-shadow: var(--box-shadow);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+      overflow: hidden;
+      margin: 20px;
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, 
+        rgba(212, 175, 55, 0.3), 
+        transparent, 
+        rgba(212, 175, 55, 0.3));
+      z-index: -1;
+      border-radius: calc(var(--border-radius) + 4px);
+      animation: borderAnimation 8s linear infinite;
+      background-size: 300% 300%;
+    }
+    
+    @keyframes borderAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      text-align: center;
+      color: var(--gold);
+      margin-bottom: 30px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+      position: relative;
+      padding-bottom: 20px;
+      font-size: 2.5rem;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 30%;
+      width: 40%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--gold);
+      font-weight: 600;
+      margin: 30px 0 20px;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+    
+    .markets-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+    
+    .market-section {
+      width: 100%;
+    }
+    
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: rgba(245, 245, 245, 0.05);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    
+    label::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(212, 175, 55, 0.1), 
+        transparent);
+      transition: all 0.8s ease;
+    }
+    
+    label:hover {
+      background: rgba(212, 175, 55, 0.15);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border-color: rgba(212, 175, 55, 0.3);
+    }
+    
+    label:hover::before {
+      left: 100%;
+    }
+    
+    input[type="checkbox"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--gold);
+      border-radius: 5px;
+      margin-right: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    input[type="checkbox"]:checked {
+      background-color: var(--gold);
+    }
+    
+    input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      color: var(--bg-dark);
+      font-size: 14px;
+      font-weight: bold;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    select, input[type="datetime-local"] {
+      width: 100%;
+      margin: 12px 0;
+      background: rgba(245, 245, 245, 0.08);
+      color: var(--text-lighter);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      padding: 16px 20px;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      transition: var(--transition);
+    }
+    
+    select:focus, input[type="datetime-local"]:focus {
+      outline: none;
+      border-color: var(--gold-light);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+      background: rgba(245, 245, 245, 0.12);
+    }
+    
+    .controls-row {
+      display: flex;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .controls-col {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .direction-buttons {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    
+    .direction-buttons button {
+      flex: 1;
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      margin: 5px 0;
+      padding: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 13px;
+      font-family: 'Montserrat', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .direction-buttons button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(212, 175, 55, 0.2), 
+        transparent);
+      transition: all 0.8s ease;
+    }
+    
+    .direction-buttons button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+      background: rgba(212, 175, 55, 0.2);
+    }
+    
+    .direction-buttons button:hover::before {
+      left: 100%;
+    }
+    
+    .direction-buttons button.active {
+      background: var(--gold);
+      color: var(--bg-dark);
+      font-weight: 600;
+      border-color: var(--gold-light);
+    }
+    
+    .generate-btn {
+      margin-top: 30px;
+      width: 100%;
+      padding: 20px;
+      background: linear-gradient(45deg, 
+        rgba(212, 175, 55, 0.9), 
+        rgba(255, 215, 0, 0.8));
+      color: var(--bg-dark);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: var(--transition);
+      box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+      font-family: 'Montserrat', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .generate-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent);
+      transition: all 0.8s ease;
+    }
+    
+    .generate-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(212, 175, 55, 0.5);
+      background: linear-gradient(45deg, 
+        rgba(212, 175, 55, 1), 
+        rgba(255, 215, 0, 0.9));
+    }
+    
+    .generate-btn:hover::after {
+      left: 100%;
+    }
+    
+    .generate-btn:active {
+      transform: translateY(1px);
+    }
+    
+    .results-container {
+      display: flex;
+      gap: 30px;
+      margin-top: 30px;
+    }
+    
+    .signal-output {
+      flex: 1;
+      padding: 0;
+      background: rgba(10, 10, 10, 0.5);
+      border-radius: var(--border-radius);
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-size: 15px;
+      white-space: pre-line;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+    }
+    
+    .signal-output::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .signal-output::-webkit-scrollbar-track {
+      background: rgba(212, 175, 55, 0.1);
+      border-radius: 4px;
+    }
+    
+    .signal-output::-webkit-scrollbar-thumb {
+      background: var(--gold);
+      border-radius: 4px;
+    }
+    
+    .signal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.6s forwards;
+      transition: var(--transition);
+    }
+    
+    .signal-item:hover {
+      background: rgba(212, 175, 55, 0.05);
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .signal-time {
+      color: var(--gold);
+      font-weight: 500;
+      font-family: 'Cormorant Garamond', serif;
+      min-width: 70px;
+      font-size: 16px;
+    }
+    
+    .signal-pair {
+      color: var(--text-lighter);
+      font-weight: 500;
+      flex-grow: 1;
+      text-align: center;
+      letter-spacing: 1px;
+      font-size: 16px;
+    }
+    
+    .signal-direction {
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 2px;
+      min-width: 100px;
+      text-align: center;
+      font-family: 'Montserrat', sans-serif;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: var(--transition);
+    }
+    
+    .signal-direction:hover {
+      transform: scale(1.05);
+    }
+    
+    .put {
+      background-color: rgba(244, 67, 54, 0.15);
+      color: #FF8A80;
+      border: 1px solid #F44336;
+    }
+    
+    .call {
+      background-color: rgba(76, 175, 80, 0.15);
+      color: #A5D6A7;
+      border: 1px solid #4CAF50;
+    }
+    
+    .loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(10, 10, 10, 0.9);
+      z-index: 10;
+      border-radius: var(--border-radius);
+    }
+    
+    .spinner {
+      width: 70px;
+      height: 70px;
+      border: 5px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+    
+    .loading-text {
+      color: var(--gold);
+      font-size: 18px;
+      letter-spacing: 2px;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .empty-state {
+      color: rgba(245, 245, 245, 0.4);
+      text-align: center;
+      padding: 60px 20px;
+      font-style: italic;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+    }
+    
+    .error-message {
+      color: #FF8A80;
+      text-align: center;
+      padding: 30px;
+      font-weight: 500;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+    }
+    
+    .success-message {
+      color: var(--gold);
+      text-align: center;
+      padding: 25px;
+      font-weight: 600;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      margin-bottom: 10px;
+      text-shadow: 0 2px 5px rgba(212, 175, 55, 0.3);
+    }
+    
+    .watermark {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      color: rgba(212, 175, 55, 0.4);
+      font-size: 14px;
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 2px;
+    }
+    
+    .stats-panel {
+      flex: 0 0 300px;
+      background: var(--bg-glass);
+      border-radius: var(--border-radius);
+      padding: 25px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      height: fit-content;
+    }
+    
+    .stat-item {
+      margin-bottom: 20px;
+    }
+    
+    .stat-label {
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .stat-value {
+      color: var(--text-lighter);
+      font-size: 24px;
+      font-weight: 500;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .container {
+        max-width: 100%;
+        margin: 10px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .markets-container, .results-container, .controls-row {
+        flex-direction: column;
+      }
+      
+      .stats-panel {
+        order: -1;
+        margin-bottom: 30px;
+      }
+      
+      .checkbox-group {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .checkbox-group {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
+    
+    @media (max-width: 576px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .checkbox-group {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .direction-buttons button {
+        padding: 12px;
+        font-size: 12px;
+      }
+      
+      .generate-btn {
+        padding: 16px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container animate__animated animate__fadeIn">
+    <h1>FX OPTIONS IND</h1>
+    
+    <div class="markets-container">
+      <div class="market-section">
+        <div class="section-title">REAL MARKET</div>
+        <div class="checkbox-group" id="pairList">
+          <label><input type="checkbox" value="EUR/GBP">EUR/GBP</label>
+          <label><input type="checkbox" value="EUR/USD">EUR/USD</label>
+          <label><input type="checkbox" value="USD/CAD">USD/CAD</label>
+          <label><input type="checkbox" value="USD/JPY">USD/JPY</label>
+          <label><input type="checkbox" value="EUR/CAD">EUR/CAD</label>
+          <label><input type="checkbox" value="GBP/AUD">GBP/AUD</label>
+          <label><input type="checkbox" value="CAD/JPY">CAD/JPY</label>
+          <label><input type="checkbox" value="AUD/JPY">AUD/JPY</label>
+          <label><input type="checkbox" value="AUD/CAD">AUD/CAD</label>
+          <label><input type="checkbox" value="AUD/USD">AUD/USD</label>
+          <label><input type="checkbox" value="GBP/USD">GBP/USD</label>
+          <label><input type="checkbox" value="GBP/CHF">GBP/CHF</label>
+          <label><input type="checkbox" value="USD/CHF">USD/CHF</label>
+        </div>
+      </div>
+
+      <div class="market-section">
+        <div class="section-title">OTC MARKET (QX BROKER)</div>
+        <div class="checkbox-group" id="otcList">
+          <label><input type="checkbox" value="EUR/USD-OTC">EUR/USD-OTC</label>
+          <label><input type="checkbox" value="GBP/USD-OTC">GBP/USD-OTC</label>
+          <label><input type="checkbox" value="USD/JPY-OTC">USD/JPY-OTC</label>
+          <label><input type="checkbox" value="USD/CAD-OTC">USD/CAD-OTC</label>
+          <label><input type="checkbox" value="AUD/USD-OTC">AUD/USD-OTC</label>
+          <label><input type="checkbox" value="USD/CHF-OTC">USD/CHF-OTC</label>
+          <label><input type="checkbox" value="EUR/JPY-OTC">EUR/JPY-OTC</label>
+          <label><input type="checkbox" value="EUR/GBP-OTC">EUR/GBP-OTC</label>
+          <label><input type="checkbox" value="GBP/JPY-OTC">GBP/JPY-OTC</label>
+          <label><input type="checkbox" value="EUR/AUD-OTC">EUR/AUD-OTC</label>
+          <label><input type="checkbox" value="NZD/USD-OTC">NZD/USD-OTC</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <div class="controls-col">
+        <label>Number of Signals:
+          <select id="signalCount" class="animate__animated animate__fadeIn">
+            <option>5</option>
+            <option>10</option>
+            <option selected>15</option>
+            <option>20</option>
+            <option>25</option>
+            <option>30</option>
+          </select>
+        </label>
+      </div>
+      
+      <div class="controls-col">
+        <div style="color: var(--gold); margin-bottom: 12px; font-family: 'Cormorant Garamond', serif;">Direction:</div>
+        <div class="direction-buttons">
+          <button class="active" onclick="setDirection(this, 'BOTH')">BOTH</button>
+          <button onclick="setDirection(this, 'UP')">UP</button>
+          <button onclick="setDirection(this, 'DOWN')">DOWN</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <div class="controls-col">
+        <label>Start Time:
+          <input type="datetime-local" id="startTime" value="2025-04-30T02:00">
+        </label>
+      </div>
+      
+      <div class="controls-col">
+        <label>End Time:
+          <input type="datetime-local" id="endTime" value="2025-04-30T08:00">
+        </label>
+      </div>
+    </div>
+
+    <button class="generate-btn" onclick="generateSignals()">
+      GENERATE VIP SIGNALS
+    </button>
+
+    <div class="results-container">
+      <div class="signal-output" id="signalOutput">
+        <div class="empty-state">Your premium trading signals will appear here</div>
+      </div>
+      
+      <div class="stats-panel">
+        <div class="section-title">ABOUT IT</div>
+        <div class="stat-item">
+          <div class="stat-label">Avg Success Rate</div>
+          <div class="stat-value">80%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Developer Telegram</div>
+          <div class="stat-value">@Allan_Fuego</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Signals Generation</div>
+          <div class="stat-value">5 - 30</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Bot Status</div>
+          <div class="stat-value">Vip</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="watermark">FUEGO PRO EDITION</div>
+  </div>
+
+  <script>
+    let selectedDirection = "BOTH";
+
+    function setDirection(button, direction) {
+      document.querySelectorAll(".direction-buttons button").forEach(btn => {
+        btn.classList.remove("active");
+        btn.classList.remove("animate__pulse");
+      });
+      
+      button.classList.add("active");
+      button.classList.add("animate__animated", "animate__pulse");
+      selectedDirection = direction;
+      
+      setTimeout(() => {
+        button.classList.remove("animate__animated", "animate__pulse");
+      }, 1000);
+    }
+
+    async function generateSignals() {
+      const output = document.getElementById('signalOutput');
+      const selectedPairs = [
+        ...document.querySelectorAll('#pairList input:checked'),
+        ...document.querySelectorAll('#otcList input:checked')
+      ].map(i => i.value);
+
+      const count = parseInt(document.getElementById("signalCount").value);
+      const startTimeStr = document.getElementById("startTime").value;
+
+      // Clear previous output and show loading
+      output.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <div class="loading-text">Analyzing Market Data</div>
+        </div>
+      `;
+
+      // Simulate loading delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      if (!startTimeStr) {
+        output.innerHTML = `<div class="error-message">Please set a valid start time</div>`;
+        return;
+      }
+
+      if (selectedPairs.length === 0) {
+        output.innerHTML = `<div class="error-message">Please select at least one currency pair</div>`;
+        return;
+      }
+
+      const startTime = new Date(startTimeStr);
+      output.innerHTML = `
+        <div class="success-message animate__animated animate__fadeIn">
+          Generating ${count} Premium Trading Signals
+        </div>
+      `;
+
+      // Generate signals one by one with delay
+      for (let i = 0; i < count; i++) {
+        await new Promise(resolve => setTimeout(resolve, 150)); // Delay between signals
+        
+        const pair = selectedPairs[Math.floor(Math.random() * selectedPairs.length)];
+        let direction = selectedDirection;
+        
+        if (direction === "BOTH") {
+          direction = Math.random() > 0.5 ? "PUT" : "CALL";
+        } else if (direction === "UP") {
+          direction = "CALL";
+        } else {
+          direction = "PUT";
+        }
+
+        const signalTime = new Date(startTime);
+        signalTime.setMinutes(signalTime.getMinutes() + i * 7);
+        const timeStr = signalTime.toTimeString().slice(0, 5);
+        const dirClass = direction.toLowerCase();
+
+        const signalElement = document.createElement('div');
+        signalElement.className = 'signal-item';
+        signalElement.style.animationDelay = `${i * 0.1}s`;
+        signalElement.innerHTML = `
+          <span class="signal-time">${timeStr}</span>
+          <span class="signal-pair">${pair}</span>
+          <span class="signal-direction ${dirClass}">${direction}</span>
+        `;
+        
+        output.appendChild(signalElement);
+      }
+    }
+  </script>
+  <script>
+      window.onload = function () {
+        const now = new Date();
+        const pad = n => n < 10 ? '0' + n : n;
+    
+        const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+        const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        const fullNow = `${dateStr}T${timeStr}`;
+    
+        const endTime = `${dateStr}T23:59`;
+    
+        document.getElementById("startTime").value = fullNow;
+        document.getElementById("endTime").value = endTime;
+      };
+  </script>
+</body>
+</html>
